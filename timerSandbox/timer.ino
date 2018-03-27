@@ -1,6 +1,7 @@
-const uint8_t btn = PB2;
-const uint8_t led = PB3;
-const uint8_t knob = PB4;
+const uint8_t relay = PB0;
+const uint8_t knobInterupt = PB2;
+const uint8_t knob = PB3;
+const uint8_t btn = PB4;
 
 uint8_t holdDelay = 360; //from 360(6h) upto 720(12h)
 
@@ -9,24 +10,30 @@ volatile uint8_t seconds = 0;
 volatile uint16_t minutes = 0;
 
 void setup() {
-  DDRB |= (1 << led);
-  PORTB |= (1 << led);
+  DDRB |= (1 << relay); //make pin output
 
-  PORTB |= (1 << btn);
-  PCMSK |= (1 << btn);
-  GIMSK |= (1 << INT0);
+  //does not need to be height
+  //PORTB |= (1 << relay); //make pin hight
 
+  PCMSK |= (1 << knobInterupt); //for PCIE
+  GIMSK |= (1 << INT0) | (1 << PCIE);
+
+  PORTB |= (1 << btn) | (1 << knobInterupt); //pullup
 
   TCCR1 = 0;
   TCCR1 |= (1 << CS12) | (1 << CS10);
   TIMSK |= (1 << TOIE1);
 
-
   sei();
 }
 
+//on knob input
 ISR(INT0_vect) {
-    clear();
+}
+
+//on button pressed
+ISR(PCINT0_vect) {
+  clear();
 }
 
 ISR(TIMER1_OVF_vect) {
@@ -83,9 +90,9 @@ void clear() {
 }
 
 void hold() {
-    PORTB |= (1 << led);
+    PORTB |= (1 << relay);
 }
 
 void unhold() {
-    PORTB &= ~(1 << led);
+    PORTB &= ~(1 << relay);
 }
