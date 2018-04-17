@@ -9,6 +9,7 @@ const uint8_t btn = PB4;
 
 Clock clock;
 Initiator intr (relay);
+bool check (bool = false);
 
 void setup() {
     DDRB |= (1 << relay) | (1 << balancer); //make pin output
@@ -39,11 +40,13 @@ ISR(INT0_vect) {
 
 //on button pressed
 ISR(PCINT0_vect) {
-    bool isActive = intr.toggleActivity();
-
-    if (isActive) {
+    if (check(true)) {
+        intr.toggleActivity(true, false);
+    } else {
+        intr.toggleActivity(true, true);
         clock.clear();
     }
+
     check();
 }
 
@@ -52,9 +55,9 @@ ISR(TIMER1_OVF_vect) {
     check();
 }
 
-bool check () {
+bool check (bool silent) {
     balanceInterupt();
-    return intr.checkDelay(clock, analogRead(knob));
+    return intr.checkDelay(clock, analogRead(knob), silent);
 }
 
 void balanceInterupt () {
