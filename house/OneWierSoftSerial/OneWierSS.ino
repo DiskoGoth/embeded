@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 
 #define PORT 10
-#ISMASTER true
+#define ISMASTER true
 
 void setup() {
     //Start the PC serial connection
@@ -33,7 +33,7 @@ void loop() {
     }
 }
 
-void send(char[] message) {
+void send(String message) {
     // Setup the sending system with TX as pin 11, and RX as a throwaway pin 30
     SoftwareSerial mySerial(30,PORT);
     mySerial.begin(4800);
@@ -72,8 +72,9 @@ void recieverRunSlave() {
             Serial.print("Slave: rec - ");
             Serial.write((char)mySerial.read());
             recieved = true;
-            Serial.println("");
         }
     }
+    Serial.println("");
     // The serial terminal will end here as it goes out of scope and the destructor is called
 }
+
