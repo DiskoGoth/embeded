@@ -1,34 +1,38 @@
 #include <SoftwareSerial.h>
 
 #define PORT 10
-#define ISMASTER true
+#define ISMASTER_PIN 12
+#define STATUS_PIN 13
+
+bool isMaster = false;
 
 void setup() {
     //Start the PC serial connection
     Serial.begin(4800);
-    Serial.println(ISMASTER ? "Master" : "Slave");
-    pinMode(13, OUTPUT);
+    pinMode(ISMASTER_PIN, INPUT);
+    isMaster = digitalRead(ISMASTER_PIN);
+    Serial.println(isMaster ? "Master" : "Slave");
 }
 
 void loop() {
-    if (ISMASTER) {
+    if (isMaster) {
         // Master Test Code
         // This code starts by sending data out on the bus
         // It is assumed that the slave will respond immediatly, so the
         // master listens for one second for this data before sending more data
         send("abra"); 
-        digitalWrite(13, HIGH);
+        digitalWrite(STATUS_PIN, HIGH);
         recieverRunMaster();
-        digitalWrite(13, LOW);
+        digitalWrite(STATUS_PIN, LOW);
     } else {
         // Slave Test Code
         // This code starts by listening for a transmission
         // And it will only respond after it recieves a message
         // If the message is larger than one char, change the recieve
         // condition to match the new message characteristic
-        digitalWrite(13, HIGH);
+        digitalWrite(STATUS_PIN, HIGH);
         recieverRunSlave();
-        digitalWrite(13, LOW);
+        digitalWrite(STATUS_PIN, LOW);
         send("cadabra");
     }
 }
@@ -67,9 +71,9 @@ void recieverRunSlave() {
     boolean recieved = false;
     // Wait for data to be recieved and if it is print it and move on
 
+    Serial.print("Slave: rec - ");
     while (!recieved) {
         while (mySerial.available()) {
-            Serial.print("Slave: rec - ");
             Serial.write((char)mySerial.read());
             recieved = true;
         }
