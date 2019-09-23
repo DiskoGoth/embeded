@@ -13,49 +13,49 @@ WarmAnimator::WarmAnimator () {
 };
 
 void WarmAnimator::tick (CRGB leds, int ledsCount, int chunks) {
-    for (byte ledInd = 0; ledInd < NUM_LEDS; ledInd++) {
+    for (byte ledInd = 0; ledInd < ledsCount / chunks; ledInd++) {
 
-        leds[ledInd].v = valDir[ledInd] ?
-                                leds[ledInd].v + (random() % MUTATION):
-                                leds[ledInd].v - (random() % MUTATION);
+        this.chunk[ledInd].v = valDir[ledInd] ?
+                                this.chunk[ledInd].v + (random() % MUTATION):
+                                this.chunk[ledInd].v - (random() % MUTATION);
 
-        if (leds[ledInd].v > 255 - MUTATION) {
+        if (this.chunk[ledInd].v > 255 - MUTATION) {
             valDir[ledInd] = false;
-        } else if (leds[ledInd].v < 150) {
+        } else if (this.chunk[ledInd].v < 150) {
             valDir[ledInd] = true;
         }
 
-        leds[ledInd].s = satDir[ledInd] ?
-                            leds[ledInd].s + (random() % MUTATION):
-                            leds[ledInd].s - (random() % MUTATION);
+        this.chunk[ledInd].s = satDir[ledInd] ?
+                            this.chunk[ledInd].s + (random() % MUTATION):
+                            this.chunk[ledInd].s - (random() % MUTATION);
 
-        if (leds[ledInd].s > 255 - MUTATION) {
+        if (this.chunk[ledInd].s > 255 - MUTATION) {
             satDir[ledInd] = false;
-        } else if (leds[ledInd].s < 200) {
+        } else if (this.chunk[ledInd].s < 200) {
             satDir[ledInd] = true;
         }
 
-        leds[ledInd].h = hueDir[ledInd] ?
-                            leds[ledInd].h + (random() % MUTATION):
-                            leds[ledInd].h - (random() % MUTATION);
+        this.chunk[ledInd].h = hueDir[ledInd] ?
+                            this.chunk[ledInd].h + (random() % MUTATION):
+                            this.chunk[ledInd].h - (random() % MUTATION);
 
-        if (leds[ledInd].h > 35) {
+        if (this.chunk[ledInd].h > 35) {
             hueDir[ledInd] = false;
-        } else if (leds[ledInd].h < 5) {
+        } else if (this.chunk[ledInd].h < 5) {
             hueDir[ledInd] = true;
         }
 
         /*
-        Serial.print(leds[ledInd].h, DEC);
+        Serial.print(this.chunk[ledInd].h, DEC);
         Serial.print("-");
-        Serial.print(leds[ledInd].s, DEC);
+        Serial.print(this.chunk[ledInd].s, DEC);
         Serial.print("-");
-        Serial.print(leds[ledInd].v, DEC);
+        Serial.print(this.chunk[ledInd].v, DEC);
         Serial.print(" ");
         */
 
-        for (byte chunkInd = 0; chunkInd < NUM_CHUNKS; chunkInd++) {
-            chunked_leds[(ledInd+1)*(chunkInd+1)-1] = leds[ledInd];
+        for (byte chunkInd = 0; chunkInd < chunks; chunkInd++) {
+            leds[(ledInd + 1) * (chunkInd + 1) - 1] = this.chunk[ledInd];
         }
     }
 
