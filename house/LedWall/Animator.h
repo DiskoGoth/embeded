@@ -5,7 +5,7 @@
 
     class Animator {
         public:
-            virtual void tick (CRGB leds, int ledsCount, int chunks) = 0;
+            virtual void tick (CRGB leds[], int ledsCount) = 0;
     };
 
 #endif
