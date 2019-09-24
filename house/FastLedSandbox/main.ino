@@ -1,12 +1,19 @@
 #include <FastLED.h>
-#nclude "config.h"
 #include "Animator.h"
 #include "WarmAnimator.h"
+
+#define LED_PIN     10
+#define NUM_CHUNKS  5
+#define NUM_LEDS    50
+#define BRIGHTNESS  250
+#define LED_TYPE    WS2811
+#define COLOR_ORDER GRB
+#define MUTATION    3
 
 #define ANIM_COUNT  1
 
 CRGB chunked_leds[NUM_LEDS * NUM_CHUNKS];
-Animator animators[ANIM_COUNT];
+Animator* animators[ANIM_COUNT];
 
 bool animSetupFlag[ANIM_COUNT];
 byte animatorNum = 0;
@@ -33,6 +40,6 @@ void loop() {
         animSetupFlag[animatorNum] = true;
     }
 
-    animators[animatorNum].tick();
+    animators[animatorNum]->tick();
 }
 

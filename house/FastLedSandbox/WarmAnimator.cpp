@@ -1,6 +1,5 @@
 #include "WarmAnimator.h"
 #include <FastLed.h>
-#nclude "config.h"
 
 WarmAnimator::WarmAnimator () {
     for (byte ledInd = 0; ledInd < NUM_LEDS; ledInd++) {

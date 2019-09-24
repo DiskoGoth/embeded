@@ -10,10 +10,10 @@ class WarmAnimator : Animator {
             WarmAnimator () {};
 
         private:
-            bool valDir[NUM_LEDS];
-            bool satDir[NUM_LEDS];
-            bool hueDir[NUM_LEDS];
-            CHSV chunk[NUM_LEDS];
+            bool *valDir;
+            bool *satDir;
+            bool *hueDir;
+            CHSV *chunk;
 };
 
 #endif

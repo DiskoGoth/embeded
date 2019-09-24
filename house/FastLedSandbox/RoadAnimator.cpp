@@ -1,6 +1,5 @@
 #include "WarmAnimator.h"
 #include <FastLed.h>
-#nclude "config.h"
 
 RoadAnimator::RoadAnimator () {
     this.step = 1;
