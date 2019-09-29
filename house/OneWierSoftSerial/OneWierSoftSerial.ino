@@ -4,11 +4,15 @@
 #define ISMASTER_PIN 12
 #define STATUS_PIN 13
 
+#define MASTER_RECIEVE_TIME 1000
+#define SS_SPEED 4800
+#define SS_DELAY 1
+
 bool isMaster = false;
 
 void setup() {
     //Start the PC serial connection
-    Serial.begin(4800);
+    Serial.begin(9600);
     pinMode(ISMASTER_PIN, INPUT);
     isMaster = digitalRead(ISMASTER_PIN);
     Serial.println(isMaster ? "Master" : "Slave");
@@ -22,7 +26,7 @@ void loop() {
         // master listens for one second for this data before sending more data
         send("abra"); 
         digitalWrite(STATUS_PIN, HIGH);
-        recieverRunMaster();
+        masterRecieve();
         digitalWrite(STATUS_PIN, LOW);
     } else {
         // Slave Test Code
@@ -31,32 +35,38 @@ void loop() {
         // If the message is larger than one char, change the recieve
         // condition to match the new message characteristic
         digitalWrite(STATUS_PIN, HIGH);
-        recieverRunSlave();
+        slaveRecieve();
         digitalWrite(STATUS_PIN, LOW);
         send("cadabra");
     }
 }
 
-void send(String message) {
-    // Setup the sending system with TX as pin 11, and RX as a throwaway pin 30
-    SoftwareSerial mySerial(30,PORT);
-    mySerial.begin(4800);
+SoftwareSerial initConnection(bool isReciever) {
+    SoftwareSerial mySerial(isReciever ? PORT : 30, isReciever? 30 : PORT);
+    mySerial.begin(SS_SPEED);
     // A quick delay to make sure the reciever is ready
-    delay(1);
-    // Send the data and indicate that on the PC serial bus
-    mySerial.print(message);
-    // The serial terminal will end here as it goes out of scope and the destructor is called
+    delay(SS_DELAY);
+
+    return mySerial;
 }
 
-void recieverRunMaster() {
-    //Setup the recieving serial connection with RX as pin 11 and TX as a throwaway pin 30
-    SoftwareSerial mySerial(PORT,30);
-    mySerial.begin(4800);
-    //For one second print any recieved data to the PC terminal
+SoftwareSerial initConnection() {
+    return initConnection(false);
+}
+
+void send(String message) {
+    initConnection().print(message);
+    // The serial terminal will end here as it goes out of scope and the destructor is called
+    Serial.println(String(isMaster ? "Master" : "Slave") + ": send - " + message);
+}
+
+void masterRecieve() {
+    SoftwareSerial mySerial = initConnection(true);
     long time = millis();
+
     Serial.print("Master: rec - ");
-    while (millis() - time < 1000) {
-        if (mySerial.available()) {
+    while (millis() - time < MASTER_RECIEVE_TIME) {
+        while (mySerial.available()) {
             Serial.write((char)mySerial.read());
         }
     }
@@ -64,18 +74,17 @@ void recieverRunMaster() {
     //The recieving connection will close as it goes out of scope and the destructor is called
 }
 
-void recieverRunSlave() {
-    // Set up the recieving system with RX as pin 11 and TX as a throwaway pin 30
-    SoftwareSerial mySerial(PORT,30);
-    mySerial.begin(4800);
+void slaveRecieve() {
+    SoftwareSerial mySerial = initConnection(true);
     boolean recieved = false;
-    // Wait for data to be recieved and if it is print it and move on
 
+    // Wait for data to be recieved and if it is print it and move on
     Serial.print("Slave: rec - ");
     while (!recieved) {
         while (mySerial.available()) {
             Serial.write((char)mySerial.read());
-            recieved = true;
+            delay(SS_DELAY);
+            recieved = !mySerial.available();
         }
     }
     Serial.println("");
