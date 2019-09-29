@@ -24,7 +24,17 @@ void loop() {
         // This code starts by sending data out on the bus
         // It is assumed that the slave will respond immediatly, so the
         // master listens for one second for this data before sending more data
-        send("abra"); 
+        send("abra");
+        //U: 0b01010101 - 0x55
+
+        //A: 0b01000001 - 0x41
+        //a: 0b01100001 - 0x61
+        //†: 0b10000110 - 0x86
+
+        //€: 0b10000000 - 0x80
+        //À: 0b11000000 - 0xC0
+        //ð: 0b11110000 - 0xF0
+
         digitalWrite(STATUS_PIN, HIGH);
         masterRecieve();
         digitalWrite(STATUS_PIN, LOW);
